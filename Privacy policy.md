@@ -1,1 +1,5 @@
-This extension stores your configuration (URLs and layout preferences) using Chrome's built-in sync storage. No data is collected, transmitted, or shared with third parties.
+# Privacy Policy
+
+Trading Dashboard does not collect, transmit, or share any personal data or usage information with any third party.
+
+Your configuration (URLs and layout preferences) is stored exclusively using Chrome's built-in sync storage (`chrome.storage.sync`) and is never sent to any external server.
