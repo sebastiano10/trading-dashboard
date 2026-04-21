@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { X, Plus, Trash2 } from 'lucide-react'
 import { DashboardConfig, ScreenerTab, uid } from '../lib/config'
 
@@ -20,27 +19,22 @@ function Input({ value, onChange, placeholder }: { value: string; onChange: (v: 
 }
 
 export default function Settings({ config, onChange, onClose }: Props) {
-  const [draft, setDraft] = useState<DashboardConfig>(() => JSON.parse(JSON.stringify(config)))
-
-  const save = () => { onChange(draft); onClose() }
-
   const updateTab = (id: string, field: keyof ScreenerTab, val: string) =>
-    setDraft(d => ({ ...d, screeners: d.screeners.map(s => s.id === id ? { ...s, [field]: val } : s) }))
+    onChange({ ...config, screeners: config.screeners.map(s => s.id === id ? { ...s, [field]: val } : s) })
 
   const addTab = () =>
-    setDraft(d => ({ ...d, screeners: [...d.screeners, { id: uid(), label: 'New Tab', url: '' }] }))
+    onChange({ ...config, screeners: [...config.screeners, { id: uid(), label: 'New Tab', url: '' }] })
 
   const removeTab = (id: string) =>
-    setDraft(d => ({ ...d, screeners: d.screeners.filter(s => s.id !== id) }))
+    onChange({ ...config, screeners: config.screeners.filter(s => s.id !== id) })
 
-  const moveTab = (i: number, dir: -1 | 1) =>
-    setDraft(d => {
-      const arr = [...d.screeners]
-      const j = i + dir
-      if (j < 0 || j >= arr.length) return d;
-      [arr[i], arr[j]] = [arr[j], arr[i]]
-      return { ...d, screeners: arr }
-    })
+  const moveTab = (i: number, dir: -1 | 1) => {
+    const arr = [...config.screeners]
+    const j = i + dir
+    if (j < 0 || j >= arr.length) return;
+    [arr[i], arr[j]] = [arr[j], arr[i]]
+    onChange({ ...config, screeners: arr })
+  }
 
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/75">
@@ -58,12 +52,12 @@ export default function Settings({ config, onChange, onClose }: Props) {
           <section>
             <h3 className="text-[10px] font-semibold text-[#777] uppercase tracking-widest mb-2">Screener Tabs</h3>
             <div className="space-y-2">
-              {draft.screeners.map((tab, i) => (
+              {config.screeners.map((tab, i) => (
                 <div key={tab.id} className="flex items-center gap-2">
                   <div className="flex flex-col gap-0.5 shrink-0">
                     <button onClick={() => moveTab(i, -1)} disabled={i === 0}
                       className="text-[#444] hover:text-[#888] disabled:opacity-20 text-[10px] leading-none">▲</button>
-                    <button onClick={() => moveTab(i, 1)} disabled={i === draft.screeners.length - 1}
+                    <button onClick={() => moveTab(i, 1)} disabled={i === config.screeners.length - 1}
                       className="text-[#444] hover:text-[#888] disabled:opacity-20 text-[10px] leading-none">▼</button>
                   </div>
                   <input
@@ -88,14 +82,14 @@ export default function Settings({ config, onChange, onClose }: Props) {
           {/* Chart */}
           <section>
             <h3 className="text-[10px] font-semibold text-[#777] uppercase tracking-widest mb-2">Chart URL</h3>
-            <Input value={draft.chartUrl} onChange={v => setDraft(d => ({ ...d, chartUrl: v }))}
+            <Input value={config.chartUrl} onChange={v => onChange({ ...config, chartUrl: v })}
               placeholder="https://www.tradingview.com/chart/" />
           </section>
 
           {/* Chat */}
           <section>
             <h3 className="text-[10px] font-semibold text-[#777] uppercase tracking-widest mb-2">Chat URL</h3>
-            <Input value={draft.chatUrl} onChange={v => setDraft(d => ({ ...d, chatUrl: v }))}
+            <Input value={config.chatUrl} onChange={v => onChange({ ...config, chatUrl: v })}
               placeholder="https://your-chat-site.com" />
           </section>
 
@@ -110,12 +104,8 @@ export default function Settings({ config, onChange, onClose }: Props) {
         {/* Footer */}
         <div className="flex justify-end gap-2 px-5 py-3 border-t border-[#2a2a2a]">
           <button onClick={onClose}
-            className="px-4 py-1.5 text-xs border border-[#333] rounded text-[#888] hover:text-white transition-colors">
-            Cancel
-          </button>
-          <button onClick={save}
             className="px-4 py-1.5 text-xs rounded bg-[#4a9eff] hover:bg-[#3a8eef] text-white transition-colors">
-            Save
+            Close
           </button>
         </div>
       </div>
